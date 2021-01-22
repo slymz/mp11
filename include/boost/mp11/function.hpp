@@ -202,6 +202,27 @@ template<class T1, class T2, class T3, class... T> struct mp_similar_impl<T1, T2
 
 template<class... T> using mp_similar = typename detail::mp_similar_impl<T...>::type;
 
+
+namespace detail {
+
+    template<template<class...> class Tpl>
+    struct IsInst {
+        template<class T>
+        using fn = std::is_same<boost::mp11::mp_rename<T, Tpl>, T>;
+    };
+
+    template<class T, template<class...> class Tpl>
+    using instance_of_impl = boost::mp11::mp_eval_or_q< std::false_type, IsInst<Tpl>, T >;
+
+}
+
+template <template <class...> class Tpl, class T>
+inline constexpr bool mp_instance_of = i3::instance_of_impl<T, Tpl>::value;
+    
+// todo: clean up the names
+// todo: make T variadic, or add one
+    
+    
 #if BOOST_MP11_GCC
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wsign-compare"
